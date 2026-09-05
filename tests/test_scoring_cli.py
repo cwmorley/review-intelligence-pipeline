@@ -99,6 +99,28 @@ class ScoringCliTests(unittest.TestCase):
             self.assertEqual(exit_code, 2)
             self.assertIn("missing_decision_date", stderr.getvalue())
 
+    def test_all_excluded_writes_header_report_and_explicit_message(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            candidates, reviews, engagements = self._inputs(root)
+            with candidates.open(encoding="utf-8") as handle:
+                rows = list(csv.DictReader(handle))
+            self._write_csv(candidates, list(rows[0]), rows[:1])
+            stderr = io.StringIO()
+            with redirect_stderr(stderr):
+                code = main(["score", "--candidates", str(candidates), "--reviews", str(reviews),
+                             "--engagements", str(engagements), "--as-of", "2026-09-04",
+                             "--output", str(root / "scores.csv"),
+                             "--data-quality-report", str(root / "violations.csv")])
+            self.assertEqual(code, 0)
+            self.assertIn("No rankable candidates remain", stderr.getvalue())
+            with (root / "scores.csv").open() as handle:
+                reader = csv.DictReader(handle)
+                self.assertIn("rank_basis", reader.fieldnames)
+                self.assertEqual(list(reader), [])
+            with (root / "violations.csv").open() as handle:
+                self.assertEqual(len(list(csv.DictReader(handle))), 1)
+
 
 if __name__ == "__main__":
     unittest.main()

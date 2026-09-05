@@ -14,11 +14,6 @@ from .statistics import BetaEstimate, beta_posterior, effective_sample_size, rec
 
 
 VERIFIED_STATES = {"accepted", "corrected"}
-EVIDENCE_TIERS = {
-    "direction_resolved": 0,
-    "direction_unresolved": 1,
-    "insufficient_evidence": 2,
-}
 SCORE_FIELDS = [
     "rank",
     "candidate_id",
@@ -116,6 +111,7 @@ def score_candidates(
             engagements_by_candidate[candidate_id],
             verified_reviews,
             favorability_threshold,
+            as_of,
         )
         if candidate_violations:
             if strict:
@@ -166,14 +162,14 @@ def score_candidates(
                 "nrs_ev_score": 100.0 * expected_value,
                 "nrs_ev_lower_95": 100.0 * expected_value_lower,
                 "evidence_status": status,
-                "rank_basis": f"evidence_tier:{status};lower_95",
+                "rank_basis": f"evidence_available:{status != 'insufficient_evidence'};marginal_lower_95_product",
                 "human_decision_required": True,
             }
         )
 
     results.sort(
         key=lambda item: (
-            EVIDENCE_TIERS[item["evidence_status"]],
+            item["evidence_status"] == "insufficient_evidence",
             -item["expected_earned_value_lower_95"],
             item["candidate_id"],
         )
@@ -216,6 +212,7 @@ def _candidate_violations(
     engagements: list[dict],
     verified_reviews: dict[str, str],
     favorability_threshold: float,
+    as_of: date,
 ) -> list[dict[str, str]]:
     violations = []
     for engagement in engagements:
@@ -242,32 +239,34 @@ def _candidate_violations(
                     "coverage failure cannot reference a coverage review",
                 )
             )
-        if not str(engagement.get("decision_date", "")).strip():
-            violations.append(
-                _violation(
-                    "engagement",
-                    record_id,
-                    candidate_id,
-                    "missing_decision_date",
-                    "eligible engagement requires a decision date for recency weighting",
-                )
-            )
+        date_problem = _date_violation("engagement", record_id, candidate_id, "decision_date", engagement.get("decision_date"), as_of)
+        if date_problem:
+            violations.append(date_problem)
 
     for review in reviews:
         normalized = normalize_rating(review.get("rating_value"), review.get("rating_scale"))
         if is_favorable(normalized, favorability_threshold) is None:
             continue
-        if not str(review.get("published_date", "")).strip():
-            violations.append(
-                _violation(
-                    "review",
-                    str(review.get("review_id", "")).strip() or "<unknown>",
-                    candidate_id,
-                    "missing_published_date",
-                    "scored review requires a publication date for recency weighting",
-                )
-            )
+        date_problem = _date_violation("review", str(review.get("review_id") or "<unknown>"), candidate_id, "published_date", review.get("published_date"), as_of)
+        if date_problem:
+            violations.append(date_problem)
     return violations
+
+
+def _date_violation(record_type, record_id, candidate_id, field, value, as_of):
+    text = str(value or "").strip()
+    if not text:
+        code, detail = f"missing_{field}", "Scored evidence requires a date, including when decay is disabled"
+    else:
+        try:
+            observed = datetime.strptime(text, "%Y-%m-%d").date()
+        except ValueError:
+            code, detail = f"invalid_{field}", "Date must be a valid YYYY-MM-DD calendar date"
+        else:
+            if observed <= as_of:
+                return None
+            code, detail = f"future_{field}", "Evidence date is after the scoring as-of date"
+    return _violation(record_type, record_id, candidate_id, code, detail)
 
 
 def _coverage_observed(engagement: dict) -> bool:
@@ -297,7 +296,7 @@ def _violation(
 def _weight_for_date(value: object, as_of: date, half_life_days: float | None) -> float:
     if not value:
         raise ValueError("dated evidence is required when scoring")
-    observed = datetime.strptime(str(value), "%Y-%m-%d").date()
+    observed = datetime.strptime(str(value).strip(), "%Y-%m-%d").date()
     return recency_weight((as_of - observed).days, half_life_days)
 
 

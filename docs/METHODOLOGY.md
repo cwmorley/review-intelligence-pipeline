@@ -83,15 +83,27 @@ The implementation reports posterior means and equal-tail credible intervals. If
 
 ## Evidence-adjusted ranking
 
-The reported NRS-EV index remains the point estimate described above. Ordering is more conservative: candidates are grouped first by evidence status—resolved direction, unresolved direction, then insufficient evidence—and ordered within each group by:
+The reported NRS-EV index remains the point estimate described above. The ranking adopts a conservative decision policy; sorting by posterior mean is not itself a statistical error. Candidates with observations in both evidence streams are ordered by:
 
 ```text
 expected_earned_value_lower_95 = coverage_lower_95 x influence x favorability_lower_95
 ```
 
-The output preserves both the point estimate and this lower-bound value, along with a `rank_basis` field. The lower-bound value combines the lower endpoint of each component interval; it is an inspectable conservative ordering quantity, not a calibrated 95% credible interval for their product.
+Candidates lacking either evidence stream appear afterward, ordered by the same quantity. Candidate ID breaks ties. `rank_basis` records this availability gate and marginal-bound product. `evidence_status` remains visible but resolved direction gets no automatic priority: a resolved interval can indicate consistently unfavorable reviews. Availability means observations exist, not that their quantity, recency, representativeness, or relevance is sufficient for allocation.
 
-This prevents a thin point estimate with unresolved direction from outranking a directionally resolved record solely because its midpoint is higher. It does not solve selection bias and is not an exploration policy. Exploration remains a separate allocation decision described below.
+The output preserves both the point estimate and this lower-bound value. The latter combines lower endpoints of marginal equal-tail 95% intervals; it is not the exact 95% interval or quantile of the product. Its existing `_lower_95` field names refer to those input endpoints. Influence is still treated as a supplied scalar; this calculation does not quantify uncertainty in that input or model misspecification.
+
+The 30/40 synthetic example outranks 2/2 under this policy, while a well-observed unfavorable reviewer receives no categorical advantage over a promising uncertain reviewer. Those are regression checks of a stated ordering rule, not evidence of superior real-world allocation. The rule is conservative and not an exploration policy; see [Selection bias and exploration](#selection-bias-and-exploration).
+
+### Data-quality handling
+
+`score_candidates` still returns a list of ranked rows. A supplied `violations` list receives record type, ID, candidate ID, stable code, detail, and exclusion reason; without it, exclusions emit a warning. The CLI writes the optional report or prints a summary. Any supported violation excludes the entire affected active candidate, preserving unaffected candidates. Non-strict runs return zero, including an all-excluded run, which writes a header-only score file and an explicit no-candidates message. `strict=True` / `--strict` raises or returns nonzero at the first supported violation.
+
+`coverage_success_unlinked` covers empty, orphaned, unverified, or other-candidate review links; `coverage_failure_linked` covers links on a reported failure. Scored evidence dates have `missing_`, `invalid_`, or `future_` codes followed by `decision_date` or `published_date`. Dates are required even when decay is disabled so the as-of boundary remains checkable. This is not a general CSV/schema repair system: file errors, invalid global options, or malformed candidate metadata may still stop a run.
+
+### Interpretation of the probability product
+
+Favorability uses all accepted or corrected rated reviews in the selected product scope, not only reviews linked to eligible placements. Publication and favorability need not be independent for the identity `P(published and favorable) = P(published) * P(favorable | published)` to hold. Applying this index to future placements nonetheless assumes the observed review sample represents the relevant conditional favorability. Separate Beta estimates and their multiplied means do not establish that assumption or model shared uncertainty between the streams. Selection effects and product/candidate differences remain validation concerns.
 
 ## Recency weighting
 
@@ -107,7 +119,7 @@ Effective sample size is:
 n_eff = (sum(weights) ^ 2) / sum(weight ^ 2)
 ```
 
-The system reports both raw observations and effective sample size. It does not pretend a heavily decayed history contains the same evidence as an equally sized current sample.
+The system reports raw observations and Kish effective sample size. Kish effective sample size measures weight concentration, not total decayed evidence: multiplying every weight by the same factor leaves it unchanged. The Beta update uses the sum of weights as its evidence mass, so equally old observations weaken that update even if the reported effective sample size still equals the raw count. Do not interpret this field as the number of equivalent current observations.
 
 ## Selection bias and exploration
 

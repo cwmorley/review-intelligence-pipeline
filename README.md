@@ -127,7 +127,7 @@ python -m review_intelligence score --reviews data/synthetic_reviews.csv --engag
 
 By default, evidence violations exclude only the affected candidate so valid candidates can still be ranked. The command writes a one-line violation and exclusion count to standard error. Add `--data-quality-report examples/data_quality.csv` to preserve record-level codes and details in a CSV. Add `--strict` when any violation should stop the run and return a nonzero exit code, such as in regression checks.
 
-Rank order is evidence-adjusted. The published NRS-EV point estimate remains in the output, while ordering uses evidence status first and the conservative lower-bound value within each status. `rank_basis` makes that rule visible in every row. This ordering does not automate the separate decision to explore candidates with limited evidence.
+Rank order is evidence-adjusted. The published NRS-EV point estimate remains in the output, while ordering uses a conservative product of marginal lower bounds for candidates with both evidence streams, followed by those missing a stream. Resolved direction alone earns no priority because it can describe consistently unfavorable reviews. `rank_basis` makes that rule visible in every row. This ordering does not automate the separate decision to explore candidates with limited evidence.
 
 The synthetic files describe fictional outlets, reviewers, products, and placements. They are examples of data shape, not claims about real people or organizations.
 

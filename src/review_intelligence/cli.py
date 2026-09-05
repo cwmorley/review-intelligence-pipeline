@@ -93,6 +93,8 @@ def main(argv: list[str] | None = None) -> int:
                 f"{excluded_candidates} candidate(s) excluded.",
                 file=sys.stderr,
             )
+        if not scores:
+            print("No rankable candidates remain; the score file contains only its header.", file=sys.stderr)
         print(f"Wrote {len(scores)} evidence-adjusted candidate scores to {args.output}")
     elif args.command == "extract":
         html = Path(args.html).read_text(encoding="utf-8")
