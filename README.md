@@ -1,6 +1,7 @@
 # Review Intelligence Pipeline
 
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
+[![Tests](https://github.com/cwmorley/review-intelligence-pipeline/actions/workflows/ci.yml/badge.svg)](https://github.com/cwmorley/review-intelligence-pipeline/actions/workflows/ci.yml)
 
 ## What this does
 
@@ -118,48 +119,28 @@ See [VERTICAL_SPECS.md](docs/VERTICAL_SPECS.md) for the universal product identi
 
 The project uses only the Python standard library.
 
-```powershell
+```shell
 python -m pip install -e .
 python -m unittest discover -s tests -v
-review-intelligence score `
-  --reviews data/synthetic_reviews.csv `
-  --engagements data/synthetic_engagements.csv `
-  --candidates data/synthetic_candidates.csv `
-  --products data/synthetic_products.csv `
-  --target-make Northstar `
-  --as-of 2026-09-04 `
-  --output examples/synthetic_scores.csv
+python -m review_intelligence score --reviews data/synthetic_reviews.csv --engagements data/synthetic_engagements.csv --candidates data/synthetic_candidates.csv --products data/synthetic_products.csv --target-make Northstar --as-of 2026-09-04 --output examples/synthetic_scores.csv
 ```
+
+By default, evidence violations exclude only the affected candidate so valid candidates can still be ranked. The command writes a one-line violation and exclusion count to standard error. Add `--data-quality-report examples/data_quality.csv` to preserve record-level codes and details in a CSV. Add `--strict` when any violation should stop the run and return a nonzero exit code, such as in regression checks.
+
+Rank order is evidence-adjusted. The published NRS-EV point estimate remains in the output, while ordering uses a conservative product of marginal lower bounds for candidates with both evidence streams, followed by those missing a stream. Resolved direction alone earns no priority because it can describe consistently unfavorable reviews. `rank_basis` makes that rule visible in every row. This ordering does not automate the separate decision to explore candidates with limited evidence.
 
 The synthetic files describe fictional outlets, reviewers, products, and placements. They are examples of data shape, not claims about real people or organizations.
 
 To exercise the processing boundary without live collection, run `review-intelligence extract` against a saved HTML fixture. Extracted records are always marked `candidate`; the scoring layer ignores them until a human changes the verification status to `accepted` or `corrected`.
 
-```powershell
-review-intelligence extract `
-  --html data/synthetic_review_page.html `
-  --source-url https://example.com/reviews/northstar-atlas `
-  --output examples/synthetic_extracted.jsonl
+```shell
+python -m review_intelligence extract --html data/synthetic_review_page.html --source-url https://example.com/reviews/northstar-atlas --output examples/synthetic_extracted.jsonl
 
-review-intelligence resolve-products `
-  --input examples/synthetic_extracted.jsonl `
-  --products data/synthetic_products.csv `
-  --aliases data/synthetic_product_aliases.csv `
-  --output examples/synthetic_product_resolution.jsonl
+python -m review_intelligence resolve-products --input examples/synthetic_extracted.jsonl --products data/synthetic_products.csv --aliases data/synthetic_product_aliases.csv --output examples/synthetic_product_resolution.jsonl
 
-review-intelligence competitive-report `
-  --products data/synthetic_products.csv `
-  --reviews data/synthetic_reviews.csv `
-  --comparisons data/synthetic_comparisons.csv `
-  --output examples/synthetic_competitive_summary.csv
+python -m review_intelligence competitive-report --products data/synthetic_products.csv --reviews data/synthetic_reviews.csv --comparisons data/synthetic_comparisons.csv --output examples/synthetic_competitive_summary.csv
 
-review-intelligence spec-report `
-  --subject-product product-atlas `
-  --compared-product competitor-aether `
-  --products data/synthetic_products.csv `
-  --definitions data/synthetic_spec_definitions.csv `
-  --values data/synthetic_product_specs.csv `
-  --output examples/synthetic_spec_comparison.csv
+python -m review_intelligence spec-report --subject-product product-atlas --compared-product competitor-aether --products data/synthetic_products.csv --definitions data/synthetic_spec_definitions.csv --values data/synthetic_product_specs.csv --output examples/synthetic_spec_comparison.csv
 ```
 
 ## Repository map

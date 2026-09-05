@@ -2,13 +2,14 @@ from __future__ import annotations
 
 import argparse
 import json
+import sys
 from datetime import datetime
 from pathlib import Path
 
 from .competitive import build_competitive_summary, eligible_product_ids_for_make, write_competitive_summary
 from .extract import extract_review_candidates
 from .product_identity import resolve_product_records
-from .scoring import read_csv, score_candidates, write_scores
+from .scoring import DataQualityError, read_csv, score_candidates, write_data_quality_report, write_scores
 from .specs import compare_product_specs, write_spec_comparison
 
 
@@ -24,6 +25,8 @@ def build_parser() -> argparse.ArgumentParser:
     score.add_argument("--as-of", required=True, help="YYYY-MM-DD")
     score.add_argument("--half-life-days", type=float, default=730.0)
     score.add_argument("--favorability-threshold", type=float, default=0.8)
+    score.add_argument("--data-quality-report", help="CSV destination for candidate-level evidence violations")
+    score.add_argument("--strict", action="store_true", help="stop on the first data-quality violation")
     score.add_argument("--output", required=True)
     extract = subcommands.add_parser("extract", help="extract unverified candidates from a saved HTML file")
     extract.add_argument("--html", required=True)
@@ -62,17 +65,36 @@ def main(argv: list[str] | None = None) -> int:
             if not product_ids:
                 raise SystemExit(f"no verified products found for target make: {args.target_make}")
             scope = f"target make: {args.target_make}"
-        scores = score_candidates(
-            candidates=read_csv(args.candidates),
-            reviews=read_csv(args.reviews),
-            engagements=read_csv(args.engagements),
-            as_of=datetime.strptime(args.as_of, "%Y-%m-%d").date(),
-            half_life_days=args.half_life_days,
-            favorability_threshold=args.favorability_threshold,
-            eligible_product_ids=product_ids,
-            analysis_scope=scope,
-        )
+        violations = []
+        try:
+            scores = score_candidates(
+                candidates=read_csv(args.candidates),
+                reviews=read_csv(args.reviews),
+                engagements=read_csv(args.engagements),
+                as_of=datetime.strptime(args.as_of, "%Y-%m-%d").date(),
+                half_life_days=args.half_life_days,
+                favorability_threshold=args.favorability_threshold,
+                eligible_product_ids=product_ids,
+                analysis_scope=scope,
+                strict=args.strict,
+                violations=violations,
+            )
+        except DataQualityError as error:
+            print(f"Data quality error: {error}", file=sys.stderr)
+            return 2
         write_scores(args.output, scores)
+        excluded_candidates = len({violation["candidate_id"] for violation in violations})
+        if args.data_quality_report:
+            write_data_quality_report(args.data_quality_report, violations)
+            print(f"Wrote {len(violations)} data-quality violations to {args.data_quality_report}")
+        else:
+            print(
+                f"Data quality: {len(violations)} violation(s); "
+                f"{excluded_candidates} candidate(s) excluded.",
+                file=sys.stderr,
+            )
+        if not scores:
+            print("No rankable candidates remain; the score file contains only its header.", file=sys.stderr)
         print(f"Wrote {len(scores)} evidence-adjusted candidate scores to {args.output}")
     elif args.command == "extract":
         html = Path(args.html).read_text(encoding="utf-8")
