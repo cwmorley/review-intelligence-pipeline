@@ -1,5 +1,7 @@
 # Review Intelligence Pipeline
 
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
+
 ## What this does
 
 This project turns scattered product reviews into a useful, searchable history of:
@@ -180,4 +182,4 @@ review-intelligence spec-report `
 
 This is a public portfolio demonstration built entirely with fictional products, reviewers, outlets, placements, and source URLs. Populated production engagement ledgers, private correspondence, contact information, and copyrighted source archives do not belong in this repository.
 
-No open-source license has been selected or granted. A license can be added later if Chris Morley decides to permit reuse, modification, or redistribution.
+This project is open source under the [Apache License 2.0](LICENSE). It may be used, modified, and distributed—including commercially—subject to the license's notice, attribution, and other terms. The license includes an explicit patent grant and does not provide a warranty.
