@@ -81,6 +81,18 @@ The default prior is `Beta(1, 1)`, a uniform prior. This is a transparent baseli
 
 The implementation reports posterior means and equal-tail credible intervals. If the favorability interval crosses `0.5`, the direction is reported as unresolved.
 
+## Evidence-adjusted ranking
+
+The reported NRS-EV index remains the point estimate described above. Ordering is more conservative: candidates are grouped first by evidence status—resolved direction, unresolved direction, then insufficient evidence—and ordered within each group by:
+
+```text
+expected_earned_value_lower_95 = coverage_lower_95 x influence x favorability_lower_95
+```
+
+The output preserves both the point estimate and this lower-bound value, along with a `rank_basis` field. The lower-bound value combines the lower endpoint of each component interval; it is an inspectable conservative ordering quantity, not a calibrated 95% credible interval for their product.
+
+This prevents a thin point estimate with unresolved direction from outranking a directionally resolved record solely because its midpoint is higher. It does not solve selection bias and is not an exploration policy. Exploration remains a separate allocation decision described below.
+
 ## Recency weighting
 
 When a half-life is configured:
