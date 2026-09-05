@@ -1,0 +1,34 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.invalid/review-intelligence/comparison.schema.json",
+  "title": "Competitive Comparison Observation",
+  "type": "object",
+  "required": [
+    "comparison_id",
+    "review_id",
+    "subject_product_id",
+    "compared_product_id",
+    "match_set_id",
+    "match_basis",
+    "comparison_type",
+    "comparative_outcome",
+    "evidence_locator",
+    "logged_date",
+    "verification_status"
+  ],
+  "properties": {
+    "comparison_id": {"type": "string", "minLength": 1},
+    "review_id": {"type": "string", "minLength": 1},
+    "subject_product_id": {"type": "string", "minLength": 1},
+    "compared_product_id": {"type": "string", "minLength": 1},
+    "match_set_id": {"type": "string", "minLength": 1},
+    "match_basis": {"type": "string", "minLength": 1},
+    "comparison_type": {"enum": ["head_to_head", "benchmark", "alternative", "mentioned"]},
+    "comparative_outcome": {"enum": ["subject_preferred", "parity", "compared_preferred", "mixed", "unclear"]},
+    "evidence_locator": {"type": "string", "minLength": 1},
+    "logged_date": {"type": "string", "format": "date"},
+    "verification_status": {"enum": ["candidate", "accepted", "corrected", "rejected"]},
+    "notes": {"type": ["string", "null"]}
+  },
+  "additionalProperties": false
+}

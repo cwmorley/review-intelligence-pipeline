@@ -1,0 +1,14 @@
+engagement_id,candidate_id,product_id,decision_date,eligible_for_coverage,coverage_observed,coverage_review_id,unit_cost,returned,exclusion_reason
+eng-001,cand-aurora,product-atlas,2025-09-15,true,true,rev-001,2500,false,
+eng-002,cand-aurora,product-beacon,2026-01-05,true,true,rev-002,3200,true,
+eng-003,cand-aurora,product-cobalt,2024-10-02,true,true,rev-003,2100,true,
+eng-004,cand-aurora,product-delta,2026-06-10,true,false,,3700,true,
+eng-005,cand-circuit,product-atlas,2025-08-12,true,true,rev-004,2500,true,
+eng-006,cand-circuit,product-beacon,2026-04-01,true,true,rev-005,3200,false,
+eng-007,cand-circuit,product-cobalt,2024-04-20,true,true,rev-006,2100,true,
+eng-008,cand-circuit,product-delta,2026-06-12,true,false,,3700,true,
+eng-009,cand-workgrid,product-atlas,2026-02-12,true,true,rev-007,2500,true,
+eng-010,cand-workgrid,product-beacon,2025-06-01,true,true,rev-008,3200,true,
+eng-011,cand-workgrid,product-cobalt,2024-05-15,true,false,,2100,true,
+eng-012,cand-workgrid,product-delta,2026-06-14,false,false,,3700,,"unit not delivered after cancellation"
+

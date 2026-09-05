@@ -1,0 +1,30 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.invalid/review-intelligence/product-resolution.schema.json",
+  "title": "Product Identity Resolution Candidate",
+  "type": "object",
+  "required": [
+    "source_url",
+    "resolution_method",
+    "resolution_confidence",
+    "resolver_version",
+    "product_verification_status"
+  ],
+  "properties": {
+    "source_url": {"type": "string", "format": "uri"},
+    "resolved_product_id": {"type": ["string", "null"]},
+    "resolved_make": {"type": ["string", "null"]},
+    "resolved_model": {"type": ["string", "null"]},
+    "resolved_model_number": {"type": ["string", "null"]},
+    "resolved_variant": {"type": ["string", "null"]},
+    "resolved_sku": {"type": ["string", "null"]},
+    "resolved_product_vertical": {"type": ["string", "null"]},
+    "resolved_category": {"type": ["string", "null"]},
+    "detected_model_number": {"type": ["string", "null"]},
+    "resolution_method": {"type": "string", "minLength": 1},
+    "resolution_confidence": {"enum": ["high", "medium", "unresolved"]},
+    "resolver_version": {"type": "string", "minLength": 1},
+    "product_verification_status": {"enum": ["candidate", "accepted", "corrected", "rejected"]}
+  },
+  "additionalProperties": true
+}

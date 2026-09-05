@@ -1,0 +1,21 @@
+product_vertical,spec_key,display_name,data_type,unit,allowed_values,applies_to_category,required_for_match,match_weight,definition_version,active
+computers,form_factor,Form factor,enum,,desktop|laptop|tablet|server,,true,1.0,computers-v1,true
+computers,cpu,CPU,text,,,,false,0.75,computers-v1,true
+computers,hdd_size,HDD/storage size,number,GB,,,false,0.5,computers-v1,true
+computers,hdd_type,HDD/storage type,enum,,hdd|sata_ssd|nvme_ssd|hybrid|other,,false,0.5,computers-v1,true
+computers,memory_size,Memory size,number,GB,,,false,0.5,computers-v1,true
+computers,memory_type,Memory type,enum,,ddr3|ddr4|ddr5|lpddr4|lpddr5|other,,false,0.5,computers-v1,true
+computers,memory_speed,Memory speed,number,MT/s,,,false,0.5,computers-v1,true
+computers,list_price,List price,number,USD,,,false,0.5,computers-v1,true
+computers,screen_type,Screen type,enum,,ips|oled|mini_led|tn|va|other,laptop,false,0.5,computers-v1,true
+computers,screen_size,Screen size,number,in,,laptop,false,0.5,computers-v1,true
+computers,screen_resolution,Screen resolution,text,,,laptop,false,0.5,computers-v1,true
+computers,screen_refresh_rate,Screen refresh rate,number,Hz,,laptop,false,0.5,computers-v1,true
+computers,screen_brightness,Screen brightness,number,nits,,laptop,false,0.5,computers-v1,true
+computers,touchscreen,Touchscreen,boolean,,,laptop,false,0.25,computers-v1,true
+cameras,sensor_format,Sensor format,enum,,full_frame|aps_c|micro_four_thirds,,true,1.0,cameras-v1,true
+cameras,lens_mount,Lens mount,text,,,,true,1.0,cameras-v1,true
+cameras,weather_sealed,Weather sealed,boolean,,,,false,0.5,cameras-v1,true
+coffee_makers,brew_method,Brew method,enum,,drip|espresso|pod|pour_over,,true,1.0,coffee-v1,true
+coffee_makers,capacity,Capacity,number,L,,,false,0.5,coffee-v1,true
+coffee_makers,programmable,Programmable,boolean,,,,false,0.5,coffee-v1,true

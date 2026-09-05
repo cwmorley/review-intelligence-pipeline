@@ -1,0 +1,19 @@
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.venv/
+venv/
+build/
+dist/
+.env
+.env.*
+
+# Production evidence must never enter this public demonstration repository.
+private/
+production_data/
+raw_sources/
+source_archives/
+

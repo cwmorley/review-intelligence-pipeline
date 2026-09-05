@@ -1,0 +1,18 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.invalid/review-intelligence/product-spec.schema.json",
+  "title": "Product Specification Value",
+  "type": "object",
+  "required": ["product_id", "spec_key", "source_url", "verification_status"],
+  "properties": {
+    "product_id": {"type": "string", "minLength": 1},
+    "spec_key": {"type": "string", "pattern": "^[a-z][a-z0-9_]*$"},
+    "value_text": {"type": ["string", "null"]},
+    "value_number": {"type": ["number", "null"]},
+    "value_boolean": {"type": ["boolean", "null"]},
+    "unit": {"type": ["string", "null"]},
+    "source_url": {"type": "string", "format": "uri"},
+    "verification_status": {"enum": ["candidate", "accepted", "corrected", "rejected"]}
+  },
+  "additionalProperties": false
+}

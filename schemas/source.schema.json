@@ -1,0 +1,18 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.invalid/review-intelligence/source.schema.json",
+  "title": "Immutable Source Evidence",
+  "type": "object",
+  "required": ["source_id", "source_url", "retrieved_at", "content_sha256", "collection_basis"],
+  "properties": {
+    "source_id": {"type": "string", "minLength": 1},
+    "source_url": {"type": "string", "format": "uri"},
+    "retrieved_at": {"type": "string", "format": "date-time"},
+    "content_sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+    "collection_basis": {"enum": ["allowlisted_url", "rss", "sitemap", "manual_import"]},
+    "robots_checked": {"type": "boolean"},
+    "rights_note": {"type": "string"}
+  },
+  "additionalProperties": true
+}
+

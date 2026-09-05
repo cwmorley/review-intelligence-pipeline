@@ -1,0 +1,9 @@
+product_vertical,subject_product_id,subject_product,compared_product_id,compared_product,spec_key,display_name,data_type,unit,required_for_match,match_weight,definition_version,applies_to_category,subject_value,compared_value,comparison_result
+computers,product-atlas,Northstar Atlas 4000,competitor-aether,Aether Aether Pro 4100,cpu,CPU,text,,False,0.75,computers-v1,,Orion X9-280,Orion X9-280,same
+computers,product-atlas,Northstar Atlas 4000,competitor-aether,Aether Aether Pro 4100,form_factor,Form factor,enum,,True,1.0,computers-v1,,desktop,desktop,same
+computers,product-atlas,Northstar Atlas 4000,competitor-aether,Aether Aether Pro 4100,hdd_size,HDD/storage size,number,GB,False,0.5,computers-v1,,2048.0,1024.0,different
+computers,product-atlas,Northstar Atlas 4000,competitor-aether,Aether Aether Pro 4100,hdd_type,HDD/storage type,enum,,False,0.5,computers-v1,,nvme_ssd,nvme_ssd,same
+computers,product-atlas,Northstar Atlas 4000,competitor-aether,Aether Aether Pro 4100,list_price,List price,number,USD,False,0.5,computers-v1,,2499.0,2699.0,different
+computers,product-atlas,Northstar Atlas 4000,competitor-aether,Aether Aether Pro 4100,memory_size,Memory size,number,GB,False,0.5,computers-v1,,64.0,64.0,same
+computers,product-atlas,Northstar Atlas 4000,competitor-aether,Aether Aether Pro 4100,memory_speed,Memory speed,number,MT/s,False,0.5,computers-v1,,5600.0,6000.0,different
+computers,product-atlas,Northstar Atlas 4000,competitor-aether,Aether Aether Pro 4100,memory_type,Memory type,enum,,False,0.5,computers-v1,,ddr5,ddr5,same

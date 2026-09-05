@@ -1,0 +1,11 @@
+review_id,source_id,source_url,candidate_id,product_id,published_date,rating_original,rating_value,rating_scale,verification_status,parser_version
+rev-001,src-001,https://example.com/reviews/atlas-a,cand-aurora,product-atlas,2025-10-14,9/10,9,10,accepted,manual-v0.1
+rev-002,src-002,https://example.com/reviews/beacon-a,cand-aurora,product-beacon,2026-02-02,4/5,4,5,accepted,manual-v0.1
+rev-003,src-003,https://example.com/reviews/cobalt-a,cand-aurora,product-cobalt,2024-11-18,7/10,7,10,accepted,manual-v0.1
+rev-004,src-004,https://example.com/reviews/atlas-c,cand-circuit,product-atlas,2025-09-20,8/10,8,10,accepted,manual-v0.1
+rev-005,src-005,https://example.com/reviews/beacon-c,cand-circuit,product-beacon,2026-05-11,75%,75,100,corrected,manual-v0.1
+rev-006,src-006,https://example.com/reviews/cobalt-c,cand-circuit,product-cobalt,2024-06-01,4.5/5,4.5,5,accepted,manual-v0.1
+rev-007,src-007,https://example.com/reviews/atlas-w,cand-workgrid,product-atlas,2026-03-15,9.5/10,9.5,10,accepted,manual-v0.1
+rev-008,src-008,https://example.com/reviews/beacon-w,cand-workgrid,product-beacon,2025-07-08,9/10,9,10,accepted,manual-v0.1
+rev-009,src-009,https://example.com/reviews/cobalt-w,cand-workgrid,product-cobalt,2026-07-22,Excellent,,,candidate,jsonld-v0.1
+

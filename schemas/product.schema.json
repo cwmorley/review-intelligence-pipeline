@@ -1,0 +1,23 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.invalid/review-intelligence/product.schema.json",
+  "title": "Universal Product Identity",
+  "type": "object",
+  "required": ["product_id", "make", "model", "model_number", "product_vertical", "category", "subject_role", "verification_status"],
+  "properties": {
+    "product_id": {"type": "string", "minLength": 1},
+    "make": {"type": "string", "minLength": 1},
+    "model": {"type": "string", "minLength": 1},
+    "model_number": {"type": ["string", "null"], "minLength": 1},
+    "variant": {"type": ["string", "null"]},
+    "sku": {"type": ["string", "null"]},
+    "product_vertical": {"type": "string", "minLength": 1},
+    "category": {"type": "string", "minLength": 1},
+    "launch_date": {"type": ["string", "null"], "format": "date"},
+    "lifecycle_status": {"enum": ["unknown", "prelaunch", "current", "superseded", "discontinued"]},
+    "subject_role": {"enum": ["focal", "competitive", "both"]},
+    "source_url": {"type": ["string", "null"], "format": "uri"},
+    "verification_status": {"enum": ["candidate", "accepted", "corrected", "rejected"]}
+  },
+  "additionalProperties": false
+}

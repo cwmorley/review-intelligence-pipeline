@@ -1,0 +1,17 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.invalid/review-intelligence/product-alias.schema.json",
+  "title": "Product Identity Alias",
+  "type": "object",
+  "required": ["alias_id", "product_id", "alias_text", "alias_type", "verification_status"],
+  "properties": {
+    "alias_id": {"type": "string", "minLength": 1},
+    "product_id": {"type": "string", "minLength": 1},
+    "alias_text": {"type": "string", "minLength": 2},
+    "alias_type": {"enum": ["model_number", "sku", "marketing_name", "publisher_variant"]},
+    "source_url": {"type": ["string", "null"], "format": "uri"},
+    "verification_status": {"enum": ["candidate", "accepted", "corrected", "rejected"]}
+  },
+  "additionalProperties": false
+}
+

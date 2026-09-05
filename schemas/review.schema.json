@@ -1,0 +1,23 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.invalid/review-intelligence/review.schema.json",
+  "title": "Review Evidence",
+  "type": "object",
+  "required": ["review_id", "source_id", "source_url", "candidate_id", "product_id", "published_date", "verification_status"],
+  "properties": {
+    "review_id": {"type": "string", "minLength": 1},
+    "source_id": {"type": "string", "minLength": 1},
+    "source_url": {"type": "string", "format": "uri"},
+    "candidate_id": {"type": "string", "minLength": 1},
+    "product_id": {"type": "string", "minLength": 1},
+    "published_date": {"type": "string", "format": "date"},
+    "rating_original": {},
+    "rating_value": {"type": ["number", "string", "null"]},
+    "rating_scale": {"type": ["number", "string", "null"]},
+    "verification_status": {"enum": ["candidate", "accepted", "corrected", "rejected"]},
+    "parser_version": {"type": "string"},
+    "verified_by": {"type": ["string", "null"]},
+    "verified_at": {"type": ["string", "null"], "format": "date-time"}
+  },
+  "additionalProperties": true
+}

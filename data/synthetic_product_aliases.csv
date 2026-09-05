@@ -1,0 +1,12 @@
+alias_id,product_id,alias_text,alias_type,source_url,verification_status
+alias-001,product-atlas,4000,model_number,https://example.com/products/atlas-4000,accepted
+alias-002,product-atlas,Northstar Atlas 4000,marketing_name,https://example.com/products/atlas-4000,accepted
+alias-003,product-atlas,ATLAS-4000-A,sku,https://example.com/products/atlas-4000,accepted
+alias-004,product-beacon,5000,model_number,https://example.com/products/beacon-5000,accepted
+alias-005,product-beacon,Northstar Beacon 5000,marketing_name,https://example.com/products/beacon-5000,accepted
+alias-006,competitor-aether,4100,model_number,https://example.com/products/aether-4100,accepted
+alias-007,competitor-aether,Aether Pro 4100,marketing_name,https://example.com/products/aether-4100,accepted
+alias-008,competitor-boreal,5100,model_number,https://example.com/products/boreal-5100,accepted
+alias-009,competitor-forge,3100,model_number,https://example.com/products/forge-3100,accepted
+alias-010,competitor-vector,6100,model_number,https://example.com/products/vector-6100,accepted
+

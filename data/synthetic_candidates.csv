@@ -1,0 +1,4 @@
+candidate_id,candidate_name,outlet_name,influence_score,influence_basis,influence_as_of,active
+cand-aurora,Alex North,Aurora Lab,0.78,"Synthetic blend of relevant reach, engagement quality, and outlet authority",2026-09-04,true
+cand-circuit,Casey Reed,Circuit Bench,0.60,"Synthetic blend of relevant reach, engagement quality, and outlet authority",2026-09-04,true
+cand-workgrid,Morgan Lee,Workgrid Review,0.88,"Synthetic blend of relevant reach, engagement quality, and outlet authority",2026-09-04,true

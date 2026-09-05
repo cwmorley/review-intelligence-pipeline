@@ -1,0 +1,11 @@
+product_id,make,model,model_number,variant,sku,product_vertical,category,launch_date,lifecycle_status,subject_role,source_url,verification_status
+product-atlas,Northstar,Atlas,4000,,ATLAS-4000-A,computers,desktop,2025-08-15,current,focal,https://example.com/products/atlas-4000,accepted
+product-beacon,Northstar,Beacon,5000,,BEACON-5000-B,computers,desktop,2026-01-10,current,focal,https://example.com/products/beacon-5000,accepted
+product-cobalt,Northstar,Cobalt,3000,,COBALT-3000-C,computers,desktop,2024-04-01,superseded,focal,https://example.com/products/cobalt-3000,accepted
+product-delta,Northstar,Delta,6000,,DELTA-6000-D,computers,desktop,2026-06-01,current,focal,https://example.com/products/delta-6000,accepted
+competitor-aether,Aether,Aether Pro,4100,,AETHER-4100-A,computers,desktop,2025-07-20,current,competitive,https://example.com/products/aether-4100,accepted
+competitor-boreal,Boreal,Boreal Studio,5100,,BOREAL-5100-B,computers,desktop,2026-01-05,current,competitive,https://example.com/products/boreal-5100,accepted
+competitor-forge,Forge,Forge W,3100,,FORGE-3100-C,computers,desktop,2024-03-15,superseded,competitive,https://example.com/products/forge-3100,accepted
+competitor-vector,Vector,Vector Max,6100,,VECTOR-6100-D,computers,desktop,2026-05-20,current,competitive,https://example.com/products/vector-6100,accepted
+product-summit,Northstar,Summit,7000,,SUMMIT-7000-L,computers,laptop,2026-03-10,current,focal,https://example.com/products/summit-7000,accepted
+competitor-roam,Aether,Roam,7100,,ROAM-7100-L,computers,laptop,2026-03-01,current,competitive,https://example.com/products/roam-7100,accepted

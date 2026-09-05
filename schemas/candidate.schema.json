@@ -1,0 +1,17 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.invalid/review-intelligence/candidate.schema.json",
+  "title": "Reviewer or Outlet Candidate",
+  "type": "object",
+  "required": ["candidate_id", "candidate_name", "outlet_name", "influence_score", "influence_basis", "influence_as_of"],
+  "properties": {
+    "candidate_id": {"type": "string", "minLength": 1},
+    "candidate_name": {"type": "string", "minLength": 1},
+    "outlet_name": {"type": "string", "minLength": 1},
+    "influence_score": {"type": "number", "minimum": 0, "maximum": 1},
+    "influence_basis": {"type": "string", "minLength": 1},
+    "influence_as_of": {"type": "string", "format": "date"},
+    "active": {"type": "boolean"}
+  },
+  "additionalProperties": false
+}

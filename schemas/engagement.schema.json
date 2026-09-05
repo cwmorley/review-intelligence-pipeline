@@ -1,0 +1,22 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.invalid/review-intelligence/engagement.schema.json",
+  "title": "Private Review Engagement Evidence",
+  "description": "Operational denominator data. Do not publish populated production ledgers.",
+  "type": "object",
+  "required": ["engagement_id", "candidate_id", "product_id", "decision_date", "eligible_for_coverage", "coverage_observed"],
+  "properties": {
+    "engagement_id": {"type": "string", "minLength": 1},
+    "candidate_id": {"type": "string", "minLength": 1},
+    "product_id": {"type": "string", "minLength": 1},
+    "decision_date": {"type": "string", "format": "date"},
+    "eligible_for_coverage": {"type": "boolean"},
+    "coverage_observed": {"type": "boolean"},
+    "coverage_review_id": {"type": ["string", "null"]},
+    "unit_cost": {"type": ["number", "null"], "minimum": 0},
+    "returned": {"type": ["boolean", "null"]},
+    "exclusion_reason": {"type": ["string", "null"]}
+  },
+  "additionalProperties": false
+}
+

@@ -1,0 +1,4 @@
+match_set_id,subject_product_id,subject_product,compared_product_id,compared_product,match_basis,verified_comparison_count,unique_reviewer_count,subject_preferred_count,parity_count,compared_preferred_count,mixed_count,unclear_count,evidence_status,human_interpretation_required
+desktop-peer-2024,product-cobalt,Northstar Cobalt 3000,competitor-forge,Forge Forge W 3100,Same product vertical and category; required vertical specs match,1,1,0,0,1,0,0,thin_evidence,True
+desktop-peer-2025,product-atlas,Northstar Atlas 4000,competitor-aether,Aether Aether Pro 4100,Same product vertical and category; required vertical specs match,3,3,2,0,0,1,0,descriptive_only,True
+desktop-peer-2026,product-beacon,Northstar Beacon 5000,competitor-boreal,Boreal Boreal Studio 5100,Same product vertical and category; required vertical specs match,2,2,0,1,1,0,0,thin_evidence,True

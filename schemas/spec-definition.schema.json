@@ -1,0 +1,21 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.invalid/review-intelligence/spec-definition.schema.json",
+  "title": "Vertical Specification Definition",
+  "type": "object",
+  "required": ["product_vertical", "spec_key", "display_name", "data_type", "required_for_match", "match_weight", "definition_version", "active"],
+  "properties": {
+    "product_vertical": {"type": "string", "minLength": 1},
+    "spec_key": {"type": "string", "pattern": "^[a-z][a-z0-9_]*$"},
+    "display_name": {"type": "string", "minLength": 1},
+    "data_type": {"enum": ["text", "number", "boolean", "enum"]},
+    "unit": {"type": ["string", "null"]},
+    "allowed_values": {"type": ["string", "null"], "description": "Pipe-delimited when data_type is enum."},
+    "applies_to_category": {"type": ["string", "null"], "description": "Optional pipe-delimited category filter within the vertical."},
+    "required_for_match": {"type": "boolean"},
+    "match_weight": {"type": "number", "minimum": 0},
+    "definition_version": {"type": "string", "minLength": 1},
+    "active": {"type": "boolean"}
+  },
+  "additionalProperties": false
+}

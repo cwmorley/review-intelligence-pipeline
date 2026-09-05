@@ -1,0 +1,15 @@
+product_vertical,subject_product_id,subject_product,compared_product_id,compared_product,spec_key,display_name,data_type,unit,required_for_match,match_weight,definition_version,applies_to_category,subject_value,compared_value,comparison_result
+computers,product-summit,Northstar Summit 7000,competitor-roam,Aether Roam 7100,cpu,CPU,text,,False,0.75,computers-v1,,Orion Mobile X7-180,Orion Mobile X7-180,same
+computers,product-summit,Northstar Summit 7000,competitor-roam,Aether Roam 7100,form_factor,Form factor,enum,,True,1.0,computers-v1,,laptop,laptop,same
+computers,product-summit,Northstar Summit 7000,competitor-roam,Aether Roam 7100,hdd_size,HDD/storage size,number,GB,False,0.5,computers-v1,,1024.0,1024.0,same
+computers,product-summit,Northstar Summit 7000,competitor-roam,Aether Roam 7100,hdd_type,HDD/storage type,enum,,False,0.5,computers-v1,,nvme_ssd,nvme_ssd,same
+computers,product-summit,Northstar Summit 7000,competitor-roam,Aether Roam 7100,list_price,List price,number,USD,False,0.5,computers-v1,,1899.0,1799.0,different
+computers,product-summit,Northstar Summit 7000,competitor-roam,Aether Roam 7100,memory_size,Memory size,number,GB,False,0.5,computers-v1,,32.0,32.0,same
+computers,product-summit,Northstar Summit 7000,competitor-roam,Aether Roam 7100,memory_speed,Memory speed,number,MT/s,False,0.5,computers-v1,,6400.0,6400.0,same
+computers,product-summit,Northstar Summit 7000,competitor-roam,Aether Roam 7100,memory_type,Memory type,enum,,False,0.5,computers-v1,,lpddr5,lpddr5,same
+computers,product-summit,Northstar Summit 7000,competitor-roam,Aether Roam 7100,screen_brightness,Screen brightness,number,nits,False,0.5,computers-v1,laptop,500.0,450.0,different
+computers,product-summit,Northstar Summit 7000,competitor-roam,Aether Roam 7100,screen_refresh_rate,Screen refresh rate,number,Hz,False,0.5,computers-v1,laptop,120.0,165.0,different
+computers,product-summit,Northstar Summit 7000,competitor-roam,Aether Roam 7100,screen_resolution,Screen resolution,text,,False,0.5,computers-v1,laptop,2880x1800,2560x1600,different
+computers,product-summit,Northstar Summit 7000,competitor-roam,Aether Roam 7100,screen_size,Screen size,number,in,False,0.5,computers-v1,laptop,15.6,15.6,same
+computers,product-summit,Northstar Summit 7000,competitor-roam,Aether Roam 7100,screen_type,Screen type,enum,,False,0.5,computers-v1,laptop,oled,ips,different
+computers,product-summit,Northstar Summit 7000,competitor-roam,Aether Roam 7100,touchscreen,Touchscreen,boolean,,False,0.25,computers-v1,laptop,True,False,different

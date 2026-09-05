@@ -1,0 +1,47 @@
+product_id,spec_key,value_text,value_number,value_boolean,unit,source_url,verification_status
+product-atlas,form_factor,desktop,,,,https://example.com/products/atlas-4000,accepted
+product-atlas,cpu,Orion X9-280,,,,https://example.com/products/atlas-4000,accepted
+product-atlas,hdd_size,,2048,,GB,https://example.com/products/atlas-4000,accepted
+product-atlas,hdd_type,nvme_ssd,,,,https://example.com/products/atlas-4000,accepted
+product-atlas,memory_size,,64,,GB,https://example.com/products/atlas-4000,accepted
+product-atlas,memory_type,ddr5,,,,https://example.com/products/atlas-4000,accepted
+product-atlas,memory_speed,,5600,,MT/s,https://example.com/products/atlas-4000,accepted
+product-atlas,list_price,,2499,,USD,https://example.com/products/atlas-4000,accepted
+competitor-aether,form_factor,desktop,,,,https://example.com/products/aether-4100,accepted
+competitor-aether,cpu,Orion X9-280,,,,https://example.com/products/aether-4100,accepted
+competitor-aether,hdd_size,,1024,,GB,https://example.com/products/aether-4100,accepted
+competitor-aether,hdd_type,nvme_ssd,,,,https://example.com/products/aether-4100,accepted
+competitor-aether,memory_size,,64,,GB,https://example.com/products/aether-4100,accepted
+competitor-aether,memory_type,ddr5,,,,https://example.com/products/aether-4100,accepted
+competitor-aether,memory_speed,,6000,,MT/s,https://example.com/products/aether-4100,accepted
+competitor-aether,list_price,,2699,,USD,https://example.com/products/aether-4100,accepted
+product-beacon,form_factor,desktop,,,,https://example.com/products/beacon-5000,accepted
+competitor-boreal,form_factor,desktop,,,,https://example.com/products/boreal-5100,accepted
+product-summit,form_factor,laptop,,,,https://example.com/products/summit-7000,accepted
+product-summit,cpu,Orion Mobile X7-180,,,,https://example.com/products/summit-7000,accepted
+product-summit,hdd_size,,1024,,GB,https://example.com/products/summit-7000,accepted
+product-summit,hdd_type,nvme_ssd,,,,https://example.com/products/summit-7000,accepted
+product-summit,memory_size,,32,,GB,https://example.com/products/summit-7000,accepted
+product-summit,memory_type,lpddr5,,,,https://example.com/products/summit-7000,accepted
+product-summit,memory_speed,,6400,,MT/s,https://example.com/products/summit-7000,accepted
+product-summit,list_price,,1899,,USD,https://example.com/products/summit-7000,accepted
+product-summit,screen_type,oled,,,,https://example.com/products/summit-7000,accepted
+product-summit,screen_size,,15.6,,in,https://example.com/products/summit-7000,accepted
+product-summit,screen_resolution,2880x1800,,,,https://example.com/products/summit-7000,accepted
+product-summit,screen_refresh_rate,,120,,Hz,https://example.com/products/summit-7000,accepted
+product-summit,screen_brightness,,500,,nits,https://example.com/products/summit-7000,accepted
+product-summit,touchscreen,,,true,,https://example.com/products/summit-7000,accepted
+competitor-roam,form_factor,laptop,,,,https://example.com/products/roam-7100,accepted
+competitor-roam,cpu,Orion Mobile X7-180,,,,https://example.com/products/roam-7100,accepted
+competitor-roam,hdd_size,,1024,,GB,https://example.com/products/roam-7100,accepted
+competitor-roam,hdd_type,nvme_ssd,,,,https://example.com/products/roam-7100,accepted
+competitor-roam,memory_size,,32,,GB,https://example.com/products/roam-7100,accepted
+competitor-roam,memory_type,lpddr5,,,,https://example.com/products/roam-7100,accepted
+competitor-roam,memory_speed,,6400,,MT/s,https://example.com/products/roam-7100,accepted
+competitor-roam,list_price,,1799,,USD,https://example.com/products/roam-7100,accepted
+competitor-roam,screen_type,ips,,,,https://example.com/products/roam-7100,accepted
+competitor-roam,screen_size,,15.6,,in,https://example.com/products/roam-7100,accepted
+competitor-roam,screen_resolution,2560x1600,,,,https://example.com/products/roam-7100,accepted
+competitor-roam,screen_refresh_rate,,165,,Hz,https://example.com/products/roam-7100,accepted
+competitor-roam,screen_brightness,,450,,nits,https://example.com/products/roam-7100,accepted
+competitor-roam,touchscreen,,,false,,https://example.com/products/roam-7100,accepted

@@ -1,0 +1,4 @@
+rank,candidate_id,candidate_name,outlet_name,analysis_scope,coverage_raw_n,coverage_effective_n,coverage_mean,coverage_lower_95,coverage_upper_95,influence_score,favorability_raw_n,favorability_effective_n,favorability_mean,favorability_lower_95,favorability_upper_95,expected_earned_value,score_variant,nrs_ev_score,evidence_status,human_decision_required
+1,cand-workgrid,Morgan Lee,Workgrid Review,target make: Northstar,3,2.837968,0.630175,0.177292,0.964419,0.880000,2,1.972472,0.715726,0.231041,0.989995,0.396909,NRS-EV v0.1,39.690881,direction_unresolved,True
+2,cand-aurora,Alex North,Aurora Lab,target make: Northstar,4,3.844141,0.611353,0.201464,0.938671,0.780000,3,2.917217,0.623999,0.179644,0.959318,0.297557,NRS-EV v0.1,29.755711,direction_unresolved,True
+3,cand-circuit,Casey Reed,Circuit Bench,target make: Northstar,4,3.751239,0.608800,0.198459,0.938023,0.600000,3,2.808490,0.534283,0.116500,0.921566,0.195163,NRS-EV v0.1,19.516278,direction_unresolved,True
