@@ -9,6 +9,7 @@ from datetime import date, datetime
 from pathlib import Path
 from typing import Iterable
 
+from .deduplicate import exact_duplicate_groups
 from .normalize import is_favorable, normalize_rating, parse_bool
 from .statistics import BetaEstimate, beta_posterior, effective_sample_size, recency_weight
 
@@ -78,6 +79,7 @@ def score_candidates(
     analysis_scope: str = "all verified products",
     strict: bool = False,
     violations: list[dict[str, str]] | None = None,
+    duplicates: list[list[str]] | None = None,
 ) -> list[dict]:
     reviews_by_candidate: dict[str, list[dict]] = defaultdict(list)
     engagements_by_candidate: dict[str, list[dict]] = defaultdict(list)
@@ -96,6 +98,22 @@ def score_candidates(
             continue
         if parse_bool(engagement.get("eligible_for_coverage")) is True:
             engagements_by_candidate[str(engagement.get("candidate_id", ""))].append(engagement)
+
+    # A review reachable under several URLs, or stored twice with one content
+    # hash, is one observation. Collapse exact duplicates within a candidate so
+    # they cannot inflate the favorability sample. Coverage links to a collapsed
+    # id stay valid because verified_reviews keeps every verified id.
+    for review_candidate, candidate_reviews in reviews_by_candidate.items():
+        identified = [review for review in candidate_reviews if str(review.get("review_id", "")).strip()]
+        dropped: set[str] = set()
+        for group in exact_duplicate_groups(identified):
+            dropped.update(group[1:])
+            if duplicates is not None:
+                duplicates.append(group)
+        if dropped:
+            reviews_by_candidate[review_candidate] = [
+                review for review in candidate_reviews if str(review.get("review_id", "")) not in dropped
+            ]
 
     results = []
     collected_violations = violations if violations is not None else []

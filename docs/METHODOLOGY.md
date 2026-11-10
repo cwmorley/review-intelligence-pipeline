@@ -68,6 +68,8 @@ The baseline treats a normalized rating of at least `0.8` as favorable. An expli
 
 Unscored text is not converted into a numeric rating in v0.1.
 
+Exact duplicates count once. Before favorability is estimated, verified reviews by the same candidate that share a canonical URL or a content hash are collapsed to one observation (the lowest `review_id` in the group is kept). The CLI reports how many records were collapsed. Reviews by different candidates are never collapsed, and near-duplicate or syndicated copies with different URLs and hashes are not detected.
+
 ## Beta posterior
 
 Coverage and favorability use Beta priors with weighted Bernoulli evidence:
