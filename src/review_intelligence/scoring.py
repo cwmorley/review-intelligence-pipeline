@@ -103,9 +103,20 @@ def score_candidates(
         if parse_bool(candidate.get("active")) is False:
             continue
         candidate_id = str(candidate["candidate_id"])
-        influence = _bounded_float(candidate.get("influence_score"), "influence_score")
-
-        candidate_violations = _candidate_violations(
+        candidate_violations = []
+        try:
+            influence = _bounded_float(candidate.get("influence_score"), "influence_score")
+        except (TypeError, ValueError):
+            candidate_violations.append(
+                _violation(
+                    "candidate",
+                    candidate_id,
+                    candidate_id,
+                    "invalid_influence_score",
+                    "influence_score must be a number between zero and one",
+                )
+            )
+        candidate_violations += _candidate_violations(
             candidate_id,
             reviews_by_candidate[candidate_id],
             engagements_by_candidate[candidate_id],
