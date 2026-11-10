@@ -135,7 +135,7 @@ NRS-EV can be scoped to a verified target-make product set so competitive review
 - hierarchical writer and product-cycle effects;
 - matched-pair competitive differentials;
 - learned influence models;
-- unscored-verdict NLP;
+- unscored-verdict NLP admitted to scoring (the LLM extraction layer proposes a verdict candidate only);
 - fuzzy syndication detection;
 - CRM connectors;
 - autonomous shipment or outreach actions.

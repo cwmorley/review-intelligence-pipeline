@@ -143,10 +143,25 @@ python -m review_intelligence competitive-report --products data/synthetic_produ
 python -m review_intelligence spec-report --subject-product product-atlas --compared-product competitor-aether --products data/synthetic_products.csv --definitions data/synthetic_spec_definitions.csv --values data/synthetic_product_specs.csv --output examples/synthetic_spec_comparison.csv
 ```
 
+## LLM extraction (candidate only)
+
+`llm-extract` asks a model for three things JSON-LD often lacks: an overall verdict, competing products mentioned, and pros and cons with a supporting quote each. A deterministic validator runs after the model and before anything is returned. A quote is kept only when it is an exact, whitespace-normalised substring of the review text, and a product only when it appears in that text on word boundaries. Everything else goes to a `rejected` list with a reason code. Output is always `candidate` and does not enter scoring. The review text is sent as delimited, untrusted data with a character cap.
+
+```shell
+python -m review_intelligence llm-eval --golden evals/golden_reviews.json --provider offline-perfect --min verdict_accuracy=1.0 --output examples/llm_eval_report.json
+```
+
+`llm-eval` scores a provider against ten synthetic labeled reviews in `evals/` and exits 1 when a metric falls below a `--min METRIC=FLOOR` floor. CI runs it with an offline provider that replays the labels.
+
+**What is verified:** offline only. The validator, the metrics, the threshold gate, and the request and response handling of the Anthropic client are tested with fake providers and a fake transport. **No live model run has been recorded in this repository**, so there is no measured model accuracy to report. A live run needs `ANTHROPIC_API_KEY` and `ANTHROPIC_MODEL`; there is no default model. See [LLM_EXTRACTION.md](docs/LLM_EXTRACTION.md).
+
 ## Repository map
 
 - `src/review_intelligence/collectors/` — controlled source discovery and fetching
 - `src/review_intelligence/extract.py` — bounded JSON-LD extraction
+- `src/review_intelligence/llm_extract.py` — model-proposed review fields behind a deterministic grounding validator
+- `src/review_intelligence/evaluate.py` — offline evaluation harness and threshold gate for LLM extraction
+- `evals/` — synthetic labeled golden set for LLM extraction
 - `src/review_intelligence/product_identity.py` — conservative product identity and category resolution
 - `src/review_intelligence/competitive.py` — verified competitive-comparison summaries
 - `src/review_intelligence/specs.py` — configurable per-vertical specification comparisons
