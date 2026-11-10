@@ -33,10 +33,10 @@ SCORE_FIELDS = [
     "favorability_lower_95",
     "favorability_upper_95",
     "expected_earned_value",
-    "expected_earned_value_lower_95",
+    "expected_earned_value_marginal_lower_product",
     "score_variant",
     "nrs_ev_score",
-    "nrs_ev_lower_95",
+    "nrs_ev_marginal_lower_product",
     "evidence_status",
     "rank_basis",
     "human_decision_required",
@@ -186,10 +186,10 @@ def score_candidates(
                 "favorability_lower_95": favorability.lower,
                 "favorability_upper_95": favorability.upper,
                 "expected_earned_value": expected_value,
-                "expected_earned_value_lower_95": expected_value_lower,
+                "expected_earned_value_marginal_lower_product": expected_value_lower,
                 "score_variant": "NRS-EV v0.1",
                 "nrs_ev_score": 100.0 * expected_value,
-                "nrs_ev_lower_95": 100.0 * expected_value_lower,
+                "nrs_ev_marginal_lower_product": 100.0 * expected_value_lower,
                 "evidence_status": status,
                 "rank_basis": f"evidence_available:{status != 'insufficient_evidence'};marginal_lower_95_product",
                 "human_decision_required": True,
@@ -199,7 +199,7 @@ def score_candidates(
     results.sort(
         key=lambda item: (
             item["evidence_status"] == "insufficient_evidence",
-            -item["expected_earned_value_lower_95"],
+            -item["expected_earned_value_marginal_lower_product"],
             item["candidate_id"],
         )
     )

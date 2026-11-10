@@ -88,12 +88,12 @@ The implementation reports posterior means and equal-tail credible intervals. If
 The reported NRS-EV index remains the point estimate described above. The ranking adopts a conservative decision policy; sorting by posterior mean is not itself a statistical error. Candidates with observations in both evidence streams are ordered by:
 
 ```text
-expected_earned_value_lower_95 = coverage_lower_95 x influence x favorability_lower_95
+expected_earned_value_marginal_lower_product = coverage_lower_95 x influence x favorability_lower_95
 ```
 
 Candidates lacking either evidence stream appear afterward, ordered by the same quantity. Candidate ID breaks ties. `rank_basis` records this availability gate and marginal-bound product. `evidence_status` remains visible but resolved direction gets no automatic priority: a resolved interval can indicate consistently unfavorable reviews. Availability means observations exist, not that their quantity, recency, representativeness, or relevance is sufficient for allocation.
 
-The output preserves both the point estimate and this lower-bound value. The latter combines lower endpoints of marginal equal-tail 95% intervals; it is not the exact 95% interval or quantile of the product. Its existing `_lower_95` field names refer to those input endpoints. Influence is still treated as a supplied scalar; this calculation does not quantify uncertainty in that input or model misspecification.
+The output preserves both the point estimate and this conservative ordering value, as `expected_earned_value_marginal_lower_product` and `nrs_ev_marginal_lower_product` (the same value times 100). It multiplies the lower endpoints of two marginal equal-tail 95% intervals. It is not a 95% bound, interval, or quantile of the product: if the two posteriors are independent, the chance that both rates fall below their own 2.5% endpoints is far smaller than 2.5%, so the value is more conservative than a 95% lower bound would be, by an amount this baseline does not compute. Only `coverage_lower_95` and `favorability_lower_95` are 95% endpoints. Earlier outputs named these two columns `expected_earned_value_lower_95` and `nrs_ev_lower_95`; they were renamed because that name claimed more than the calculation delivers. Influence is still treated as a supplied scalar; this calculation does not quantify uncertainty in that input or model misspecification.
 
 The 30/40 synthetic example outranks 2/2 under this policy, while a well-observed unfavorable reviewer receives no categorical advantage over a promising uncertain reviewer. Those are regression checks of a stated ordering rule, not evidence of superior real-world allocation. The rule is conservative and not an exploration policy; see [Selection bias and exploration](#selection-bias-and-exploration).
 
