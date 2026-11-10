@@ -177,7 +177,7 @@ python -m review_intelligence llm-eval --golden evals/golden_reviews.json --prov
 
 ## What the command line reaches
 
-**CLI subcommands:** `score`, `extract`, `resolve-products`, `competitive-report`, and `spec-report`. Each reads local files and writes local files. None of them touches the network.
+**CLI subcommands:** `score`, `extract`, `resolve-products`, `competitive-report`, `spec-report`, `llm-extract`, and `llm-eval`. Each reads local files and writes local files. The first five never touch the network. `llm-extract` always sends one request to the Anthropic API and needs `ANTHROPIC_API_KEY` and `ANTHROPIC_MODEL`. `llm-eval` stays offline with the `offline-perfect` and `offline-flawed` providers and makes requests only with `--provider anthropic`.
 
 **Library only:** the discovery helpers (`discover_rss_urls`, `discover_sitemap_urls`, `discover_listed_urls`) and `fetch_page` are importable functions with unit tests. No CLI subcommand calls them, so there is no end-to-end collect command in v0.1, and `fetch_page` has not been run against a live site from this repository. `exact_duplicate_groups` has no subcommand of its own; `score` applies it to verified reviews.
 
