@@ -158,6 +158,7 @@ python -m review_intelligence spec-report --subject-product product-atlas --comp
 - `data/` — synthetic demonstration data
 - `docs/` — architecture, methodology, governance, and validation boundaries
 - `tests/` — deterministic unit tests
+- `sql/` — the reviewer coverage rate reproduced in SQL on SQLite (`python sql/run_coverage_rate.py`), tested for equality with the Python scoring on the synthetic data
 
 ## What the command line reaches
 
