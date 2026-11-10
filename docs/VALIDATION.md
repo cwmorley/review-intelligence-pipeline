@@ -16,10 +16,30 @@ The repository is a synthetic v0.1 implementation. Unit tests validate limited d
 | Typed spec values and units are enforced | Tested on synthetic number, boolean, text, and enum definitions | Labeled production values and failure-case fixtures |
 | Competitive comparisons are directionally logged | Tested on synthetic verified links | A labeled corpus distinguishing mentions, benchmarks, alternatives, and head-to-head tests |
 | Competitive logging isolates product effects | Unproven | Repeated matched reviewers and product sets across multiple cycles |
+| LLM output is admitted only when grounded in the source text | Tested offline with fake providers, including an injected-instruction case | Audit of rejected and admitted items from recorded live runs |
+| The LLM extracts verdicts, competitors, pros, and cons accurately | Not measured; no live model run is recorded in this repository | A recorded `llm-eval` run per model and prompt version on the synthetic set, then on 50–100 manually labeled real reviews |
 | Only verified reviews enter scoring | Tested | Regression tests and production audit logs |
 | Coverage can be inferred from public reviews | Rejected | Coverage requires an engagement denominator |
 | NRS improves allocation quality | Unproven | Retrospective usefulness test, followed by prospective or quasi-experimental evidence |
 | NRS improves commercial return | Unproven | Multiple-cycle outcome evidence with product and selection effects controlled |
+
+## LLM extraction: what has and has not been verified
+
+Verified offline, by unit tests that make no network call:
+
+- quotes are admitted only as exact, whitespace-normalised substrings of the text sent to the model;
+- competing products are admitted only on a case-insensitive, word-boundary match in that text;
+- wrong types, unknown verdicts, unexpected fields, duplicates, and items over the limit are rejected with reason codes, and provider failures produce an empty candidate rather than an exception;
+- an instruction planted in the review text does not get ungrounded output admitted, and cannot change `verification_status`;
+- the evaluation metrics and the `--min` gate return the expected values for a perfect and a deliberately flawed offline provider;
+- the Anthropic client builds the documented request and parses a `tool_use` response, using a fake transport.
+
+Not verified:
+
+- no request has been sent to a live model from this repository, so the request format is checked against documentation only;
+- no model's verdict accuracy, competitor precision or recall, or quote grounding rate has been measured;
+- the golden set is ten synthetic texts written alongside the validator. It is a regression fixture, not evidence about real reviews;
+- the validator cannot check that a verdict is right, that a quote supports its claim, or that a grounded product is a competitor rather than the reviewed product. Those remain human verification steps.
 
 ## Initial acceptance thresholds
 

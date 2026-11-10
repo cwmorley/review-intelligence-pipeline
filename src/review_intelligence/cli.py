@@ -7,7 +7,17 @@ from datetime import datetime
 from pathlib import Path
 
 from .competitive import build_competitive_summary, eligible_product_ids_for_make, write_competitive_summary
+from .evaluate import (
+    FlawedReplayProvider,
+    GoldenReplayProvider,
+    apply_thresholds,
+    evaluate_provider,
+    format_report_table,
+    load_golden_set,
+    parse_thresholds,
+)
 from .extract import extract_review_candidates
+from .llm_extract import DEFAULT_MAX_CHARS, DEFAULT_MAX_ITEMS, AnthropicProvider, ProviderConfigError, extract_review_fields
 from .product_identity import resolve_product_records
 from .scoring import DataQualityError, read_csv, score_candidates, write_data_quality_report, write_scores
 from .specs import compare_product_specs, write_spec_comparison
@@ -49,6 +59,19 @@ def build_parser() -> argparse.ArgumentParser:
     spec_report.add_argument("--definitions", required=True)
     spec_report.add_argument("--values", required=True)
     spec_report.add_argument("--output", required=True)
+    llm_extract = subcommands.add_parser("llm-extract", help="propose unverified review fields from review text with a model")
+    llm_extract.add_argument("--text", required=True, help="UTF-8 file containing one review body")
+    llm_extract.add_argument("--source-url", required=True)
+    llm_extract.add_argument("--max-chars", type=int, default=DEFAULT_MAX_CHARS)
+    llm_extract.add_argument("--max-items", type=int, default=DEFAULT_MAX_ITEMS)
+    llm_extract.add_argument("--output", required=True, help="JSON Lines destination")
+    llm_eval = subcommands.add_parser("llm-eval", help="score a provider against the labeled golden set")
+    llm_eval.add_argument("--golden", required=True, help="golden-set JSON file")
+    llm_eval.add_argument("--provider", required=True, choices=["offline-perfect", "offline-flawed", "anthropic"])
+    llm_eval.add_argument("--max-chars", type=int, default=DEFAULT_MAX_CHARS)
+    llm_eval.add_argument("--max-items", type=int, default=DEFAULT_MAX_ITEMS)
+    llm_eval.add_argument("--min", action="append", default=[], metavar="METRIC=FLOOR", help="exit 1 when a metric is below its floor; repeatable")
+    llm_eval.add_argument("--output", required=True, help="JSON report destination")
     return parser
 
 
@@ -136,4 +159,42 @@ def main(argv: list[str] | None = None) -> int:
         )
         write_spec_comparison(args.output, rows)
         print(f"Wrote {len(rows)} vertical specification comparisons to {args.output}")
+    elif args.command == "llm-extract":
+        try:
+            provider = AnthropicProvider.from_env()
+        except ProviderConfigError as error:
+            print(f"Provider configuration error: {error}", file=sys.stderr)
+            return 2
+        text = Path(args.text).read_text(encoding="utf-8")
+        record = extract_review_fields(text, provider, args.source_url, max_chars=args.max_chars, max_items=args.max_items)
+        output = Path(args.output)
+        output.parent.mkdir(parents=True, exist_ok=True)
+        output.write_text(json.dumps(record, sort_keys=True) + "\n", encoding="utf-8")
+        print(f"Wrote 1 unverified LLM extraction candidate ({len(record['rejected'])} item(s) rejected) to {args.output}")
+    elif args.command == "llm-eval":
+        try:
+            floors = parse_thresholds(args.min)
+        except ValueError as error:
+            raise SystemExit(str(error))
+        cases = load_golden_set(args.golden)
+        try:
+            provider = {
+                "offline-perfect": lambda: GoldenReplayProvider(cases),
+                "offline-flawed": lambda: FlawedReplayProvider(cases),
+                "anthropic": AnthropicProvider.from_env,
+            }[args.provider]()
+        except ProviderConfigError as error:
+            print(f"Provider configuration error: {error}", file=sys.stderr)
+            return 2
+        report = evaluate_provider(cases, provider, max_chars=args.max_chars, max_items=args.max_items)
+        report["thresholds"] = apply_thresholds(report, floors)
+        report["passed"] = all(item["passed"] for item in report["thresholds"])
+        output = Path(args.output)
+        output.parent.mkdir(parents=True, exist_ok=True)
+        output.write_text(json.dumps(report, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+        print(format_report_table(report))
+        print(f"Wrote evaluation report to {args.output}")
+        if not report["passed"]:
+            print("Evaluation gate failed: at least one metric is below its floor.", file=sys.stderr)
+            return 1
     return 0
