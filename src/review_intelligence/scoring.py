@@ -9,6 +9,7 @@ from datetime import date, datetime
 from pathlib import Path
 from typing import Iterable
 
+from .deduplicate import exact_duplicate_groups
 from .normalize import is_favorable, normalize_rating, parse_bool
 from .statistics import BetaEstimate, beta_posterior, effective_sample_size, recency_weight
 
@@ -32,10 +33,10 @@ SCORE_FIELDS = [
     "favorability_lower_95",
     "favorability_upper_95",
     "expected_earned_value",
-    "expected_earned_value_lower_95",
+    "expected_earned_value_marginal_lower_product",
     "score_variant",
     "nrs_ev_score",
-    "nrs_ev_lower_95",
+    "nrs_ev_marginal_lower_product",
     "evidence_status",
     "rank_basis",
     "human_decision_required",
@@ -78,6 +79,7 @@ def score_candidates(
     analysis_scope: str = "all verified products",
     strict: bool = False,
     violations: list[dict[str, str]] | None = None,
+    duplicates: list[list[str]] | None = None,
 ) -> list[dict]:
     reviews_by_candidate: dict[str, list[dict]] = defaultdict(list)
     engagements_by_candidate: dict[str, list[dict]] = defaultdict(list)
@@ -97,15 +99,42 @@ def score_candidates(
         if parse_bool(engagement.get("eligible_for_coverage")) is True:
             engagements_by_candidate[str(engagement.get("candidate_id", ""))].append(engagement)
 
+    # A review reachable under several URLs, or stored twice with one content
+    # hash, is one observation. Collapse exact duplicates within a candidate so
+    # they cannot inflate the favorability sample. Coverage links to a collapsed
+    # id stay valid because verified_reviews keeps every verified id.
+    for review_candidate, candidate_reviews in reviews_by_candidate.items():
+        identified = [review for review in candidate_reviews if str(review.get("review_id", "")).strip()]
+        dropped: set[str] = set()
+        for group in exact_duplicate_groups(identified):
+            dropped.update(group[1:])
+            if duplicates is not None:
+                duplicates.append(group)
+        if dropped:
+            reviews_by_candidate[review_candidate] = [
+                review for review in candidate_reviews if str(review.get("review_id", "")) not in dropped
+            ]
+
     results = []
     collected_violations = violations if violations is not None else []
     for candidate in candidates:
         if parse_bool(candidate.get("active")) is False:
             continue
         candidate_id = str(candidate["candidate_id"])
-        influence = _bounded_float(candidate.get("influence_score"), "influence_score")
-
-        candidate_violations = _candidate_violations(
+        candidate_violations = []
+        try:
+            influence = _bounded_float(candidate.get("influence_score"), "influence_score")
+        except (TypeError, ValueError):
+            candidate_violations.append(
+                _violation(
+                    "candidate",
+                    candidate_id,
+                    candidate_id,
+                    "invalid_influence_score",
+                    "influence_score must be a number between zero and one",
+                )
+            )
+        candidate_violations += _candidate_violations(
             candidate_id,
             reviews_by_candidate[candidate_id],
             engagements_by_candidate[candidate_id],
@@ -157,10 +186,10 @@ def score_candidates(
                 "favorability_lower_95": favorability.lower,
                 "favorability_upper_95": favorability.upper,
                 "expected_earned_value": expected_value,
-                "expected_earned_value_lower_95": expected_value_lower,
+                "expected_earned_value_marginal_lower_product": expected_value_lower,
                 "score_variant": "NRS-EV v0.1",
                 "nrs_ev_score": 100.0 * expected_value,
-                "nrs_ev_lower_95": 100.0 * expected_value_lower,
+                "nrs_ev_marginal_lower_product": 100.0 * expected_value_lower,
                 "evidence_status": status,
                 "rank_basis": f"evidence_available:{status != 'insufficient_evidence'};marginal_lower_95_product",
                 "human_decision_required": True,
@@ -170,7 +199,7 @@ def score_candidates(
     results.sort(
         key=lambda item: (
             item["evidence_status"] == "insufficient_evidence",
-            -item["expected_earned_value_lower_95"],
+            -item["expected_earned_value_marginal_lower_product"],
             item["candidate_id"],
         )
     )

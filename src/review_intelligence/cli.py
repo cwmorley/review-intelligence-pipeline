@@ -66,6 +66,7 @@ def main(argv: list[str] | None = None) -> int:
                 raise SystemExit(f"no verified products found for target make: {args.target_make}")
             scope = f"target make: {args.target_make}"
         violations = []
+        duplicates = []
         try:
             scores = score_candidates(
                 candidates=read_csv(args.candidates),
@@ -78,6 +79,7 @@ def main(argv: list[str] | None = None) -> int:
                 analysis_scope=scope,
                 strict=args.strict,
                 violations=violations,
+                duplicates=duplicates,
             )
         except DataQualityError as error:
             print(f"Data quality error: {error}", file=sys.stderr)
@@ -91,6 +93,12 @@ def main(argv: list[str] | None = None) -> int:
             print(
                 f"Data quality: {len(violations)} violation(s); "
                 f"{excluded_candidates} candidate(s) excluded.",
+                file=sys.stderr,
+            )
+        if duplicates:
+            collapsed = sum(len(group) - 1 for group in duplicates)
+            print(
+                f"Duplicates: {collapsed} exact duplicate review record(s) in {len(duplicates)} group(s) counted once.",
                 file=sys.stderr,
             )
         if not scores:

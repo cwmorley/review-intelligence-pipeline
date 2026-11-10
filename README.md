@@ -154,10 +154,19 @@ python -m review_intelligence spec-report --subject-product product-atlas --comp
 - `src/review_intelligence/deduplicate.py` — canonical URL and exact-duplicate grouping
 - `src/review_intelligence/statistics.py` — Beta posterior and effective-sample-size calculations
 - `src/review_intelligence/scoring.py` — NRS baseline decision-support output
-- `schemas/` — machine-readable evidence contracts, including universal product identity and customizable vertical specs
+- `schemas/` — JSON Schema descriptions of the record shapes, including universal product identity and customizable vertical specs (documentation only; see below)
 - `data/` — synthetic demonstration data
 - `docs/` — architecture, methodology, governance, and validation boundaries
 - `tests/` — deterministic unit tests
+- `sql/` — the reviewer coverage rate reproduced in SQL on SQLite (`python sql/run_coverage_rate.py`), tested for equality with the Python scoring on the synthetic data
+
+## What the command line reaches
+
+**CLI subcommands:** `score`, `extract`, `resolve-products`, `competitive-report`, and `spec-report`. Each reads local files and writes local files. None of them touches the network.
+
+**Library only:** the discovery helpers (`discover_rss_urls`, `discover_sitemap_urls`, `discover_listed_urls`) and `fetch_page` are importable functions with unit tests. No CLI subcommand calls them, so there is no end-to-end collect command in v0.1, and `fetch_page` has not been run against a live site from this repository. `exact_duplicate_groups` has no subcommand of its own; `score` applies it to verified reviews.
+
+**Schemas are documentation.** The files in `schemas/` describe the intended record shapes. No code in `src/` loads or enforces them, and the project takes no JSON Schema dependency. The checks that actually run are the ones written in Python: verification status, evidence links, dates, influence range, and typed spec values.
 
 ## Publication status
 

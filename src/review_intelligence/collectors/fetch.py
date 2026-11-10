@@ -5,12 +5,30 @@ from __future__ import annotations
 from datetime import datetime, timezone
 from urllib import robotparser
 from urllib.parse import urlsplit
-from urllib.request import Request, urlopen
+from urllib.request import HTTPRedirectHandler, Request, build_opener
 
 from ..deduplicate import content_sha256
 
 
 DEFAULT_USER_AGENT = "ReviewIntelligenceResearchBot/0.1 (+contact-required-before-public-use)"
+
+
+class AllowlistRedirectHandler(HTTPRedirectHandler):
+    """Refuse any redirect hop whose scheme or host is outside the allowlist."""
+
+    def __init__(self, allowed_hosts: set[str]) -> None:
+        self._allowed_hosts = {item.lower() for item in allowed_hosts}
+
+    def redirect_request(self, req, fp, code, msg, headers, newurl):
+        _require_allowed(newurl, self._allowed_hosts, "redirect target")
+        return super().redirect_request(req, fp, code, msg, headers, newurl)
+
+
+def _require_allowed(url: str, normalized_allowlist: set[str], label: str) -> None:
+    parts = urlsplit(url)
+    host = (parts.hostname or "").lower()
+    if parts.scheme not in {"http", "https"} or host not in normalized_allowlist:
+        raise PermissionError(f"{label} is not allowlisted: {parts.scheme}://{host}")
 
 
 def fetch_page(
@@ -19,6 +37,7 @@ def fetch_page(
     user_agent: str = DEFAULT_USER_AGENT,
     max_bytes: int = 2_000_000,
     timeout_seconds: float = 15.0,
+    opener=None,
 ) -> dict:
     parts = urlsplit(url)
     if parts.scheme not in {"http", "https"}:
@@ -39,7 +58,12 @@ def fetch_page(
         raise PermissionError(f"robots.txt does not permit retrieval: {url}")
 
     request = Request(url, headers={"User-Agent": user_agent, "Accept": "text/html,application/xhtml+xml"})
-    with urlopen(request, timeout=timeout_seconds) as response:
+    # The allowlist is enforced on every redirect hop, not only the first URL.
+    # robots.txt is checked for the requested URL; a same-allowlist redirect
+    # target is not re-checked against its own robots.txt.
+    opener = opener or build_opener(AllowlistRedirectHandler(normalized_allowlist))
+    with opener.open(request, timeout=timeout_seconds) as response:
+        _require_allowed(response.geturl() or url, normalized_allowlist, "final response URL")
         content_type = response.headers.get_content_type()
         if content_type not in {"text/html", "application/xhtml+xml"}:
             raise ValueError(f"unsupported content type: {content_type}")

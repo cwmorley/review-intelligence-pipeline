@@ -22,7 +22,17 @@ class RankingPolicyTests(unittest.TestCase):
         self.assertEqual(scores[1]["evidence_status"], "direction_resolved")
         self.assertLess(scores[1]["favorability_upper_95"], .5)
         self.assertEqual(scores[0]["evidence_status"], "direction_unresolved")
-        self.assertGreater(scores[0]["expected_earned_value_lower_95"], scores[1]["expected_earned_value_lower_95"])
+        self.assertGreater(scores[0]["expected_earned_value_marginal_lower_product"], scores[1]["expected_earned_value_marginal_lower_product"])
+
+    def test_product_of_marginal_bounds_is_not_labelled_as_a_95_percent_bound(self):
+        from review_intelligence.scoring import SCORE_FIELDS
+        scores = score_candidates(*poor_and_promising(), as_of=date(2026, 9, 4), half_life_days=None)
+        self.assertNotIn("expected_earned_value_lower_95", SCORE_FIELDS)
+        self.assertNotIn("nrs_ev_lower_95", SCORE_FIELDS)
+        row = scores[0]
+        product = row["coverage_lower_95"] * row["influence_score"] * row["favorability_lower_95"]
+        self.assertAlmostEqual(row["expected_earned_value_marginal_lower_product"], product)
+        self.assertAlmostEqual(row["nrs_ev_marginal_lower_product"], 100 * product)
 
     def test_orphan_and_wrong_candidate_links_exclude_only_affected_candidate(self):
         for link in ("nonexistent", "promising-0", ""):
