@@ -38,6 +38,7 @@ Review pages are untrusted. The text is sent inside `<review_text>` tags, a clos
 
 - **Verdict is not grounded.** It is a judgment. A wrong or manipulated verdict passes as a candidate. It is never converted to a rating and never enters NRS.
 - **Grounded is not the same as correct.** A real quote can be attached to the wrong claim. Text planted in the page is itself quotable. The reviewed product can be offered as a competitor; the flawed offline provider does this on purpose so the eval shows it.
+- **`claim` is not grounded.** Each kept pro or con carries a short free-text claim next to its grounded quote. The claim is the model's paraphrase and is never checked against the source, so text planted in a page can dictate it. Do not show a claim without its quote beside it.
 - **Exact matching is strict.** A quote with normalised punctuation or a product written differently from the text is rejected. That costs recall in exchange for precision.
 - **Truncation.** Text beyond `max_chars` is not sent and cannot ground anything.
 

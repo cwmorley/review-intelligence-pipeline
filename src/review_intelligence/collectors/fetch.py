@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from datetime import datetime, timezone
 from urllib import robotparser
+from urllib.error import HTTPError
 from urllib.parse import urlsplit
 from urllib.request import HTTPRedirectHandler, Request, build_opener
 
@@ -47,21 +48,35 @@ def fetch_page(
     if host not in normalized_allowlist:
         raise PermissionError(f"host is not allowlisted: {host}")
 
+    # One opener serves robots.txt and the page, so both get the allowlist on
+    # every redirect hop, the same timeout, and the same User-Agent.
+    opener = opener or build_opener(AllowlistRedirectHandler(normalized_allowlist))
     robots_url = f"{parts.scheme}://{parts.netloc}/robots.txt"
     robots = robotparser.RobotFileParser()
     robots.set_url(robots_url)
     try:
-        robots.read()
+        robots_request = Request(robots_url, headers={"User-Agent": user_agent})
+        with opener.open(robots_request, timeout=timeout_seconds) as robots_response:
+            _require_allowed(robots_response.geturl() or robots_url, normalized_allowlist, "robots.txt response URL")
+            robots.parse(robots_response.read(max_bytes).decode("utf-8", errors="replace").splitlines())
+    except HTTPError as error:
+        # Same policy as RobotFileParser.read(): 401/403 forbid everything, other 4xx mean no rules.
+        if error.code in (401, 403):
+            robots.disallow_all = True
+        elif 400 <= error.code < 500:
+            robots.allow_all = True
+        else:
+            raise PermissionError(f"robots.txt could not be verified for {host}") from error
+    except PermissionError:
+        raise
     except OSError as error:
         raise PermissionError(f"robots.txt could not be verified for {host}") from error
     if not robots.can_fetch(user_agent, url):
         raise PermissionError(f"robots.txt does not permit retrieval: {url}")
 
     request = Request(url, headers={"User-Agent": user_agent, "Accept": "text/html,application/xhtml+xml"})
-    # The allowlist is enforced on every redirect hop, not only the first URL.
     # robots.txt is checked for the requested URL; a same-allowlist redirect
     # target is not re-checked against its own robots.txt.
-    opener = opener or build_opener(AllowlistRedirectHandler(normalized_allowlist))
     with opener.open(request, timeout=timeout_seconds) as response:
         _require_allowed(response.geturl() or url, normalized_allowlist, "final response URL")
         content_type = response.headers.get_content_type()
@@ -79,4 +94,5 @@ def fetch_page(
             "byte_count": len(payload),
             "body": payload,
         }
+
 
