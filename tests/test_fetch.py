@@ -32,28 +32,31 @@ class StubResponse:
         return False
 
 
+ROBOTS_ALLOW = b"User-agent: *\nAllow: /\n"
+ROBOTS_DISALLOW = b"User-agent: *\nDisallow: /\n"
+
+
 class StubOpener:
-    def __init__(self, response):
+    """Serves robots.txt and the page. Page requests and robots requests are recorded apart."""
+
+    def __init__(self, response, robots_body=ROBOTS_ALLOW):
         self.response = response
+        self.robots_body = robots_body
         self.requests = []
+        self.robots_requests = []
+        self.timeouts = []
 
     def open(self, request, timeout=None):
+        self.timeouts.append(timeout)
+        if request.full_url.endswith("/robots.txt"):
+            self.robots_requests.append(request)
+            return StubResponse(self.robots_body, "text/plain", final_url=request.full_url)
         self.requests.append(request)
         return self.response
 
 
 class FetchPageTests(unittest.TestCase):
-    """No network: robots.txt retrieval and the opener are both stubbed."""
-
-    def setUp(self):
-        self.robots_allows = True
-        patches = [
-            mock.patch.object(fetch.robotparser.RobotFileParser, "read", lambda parser: None),
-            mock.patch.object(fetch.robotparser.RobotFileParser, "can_fetch", lambda parser, agent, url: self.robots_allows),
-        ]
-        for patch in patches:
-            patch.start()
-            self.addCleanup(patch.stop)
+    """No network: robots.txt and the page are both served by the stub opener."""
 
     def test_allowed_page_returns_evidence_record(self):
         opener = StubOpener(StubResponse(b"<html>ok</html>"))
@@ -62,6 +65,8 @@ class FetchPageTests(unittest.TestCase):
         self.assertEqual(record["byte_count"], 15)
         self.assertEqual(len(record["content_sha256"]), 64)
         self.assertEqual(len(opener.requests), 1)
+        self.assertEqual(len(opener.robots_requests), 1)
+        self.assertEqual(opener.timeouts, [15.0, 15.0])
 
     def test_non_http_scheme_is_rejected_before_any_request(self):
         opener = StubOpener(StubResponse())
@@ -76,11 +81,11 @@ class FetchPageTests(unittest.TestCase):
         self.assertEqual(opener.requests, [])
 
     def test_robots_disallow_is_respected(self):
-        self.robots_allows = False
-        opener = StubOpener(StubResponse())
-        with self.assertRaises(PermissionError):
+        opener = StubOpener(StubResponse(), robots_body=ROBOTS_DISALLOW)
+        with self.assertRaisesRegex(PermissionError, "does not permit"):
             fetch_page(URL, ALLOWED, opener=opener)
         self.assertEqual(opener.requests, [])
+        self.assertEqual(len(opener.robots_requests), 1)
 
     def test_unsupported_content_type_is_rejected(self):
         with self.assertRaisesRegex(ValueError, "unsupported content type"):

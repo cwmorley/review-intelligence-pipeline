@@ -10,7 +10,8 @@ import json
 import os
 import re
 from typing import Any, Callable
-from urllib.error import HTTPError, URLError
+from http.client import HTTPException
+from urllib.error import HTTPError
 from urllib.request import Request, urlopen
 
 from .deduplicate import content_sha256
@@ -337,5 +338,7 @@ def _urlopen_transport(request: Request, timeout_seconds: float) -> bytes:
             return response.read()
     except HTTPError as error:
         raise ProviderError(f"provider returned HTTP {error.code}") from error
-    except (URLError, TimeoutError) as error:
-        raise ProviderError("provider request failed before a response was received") from error
+    except (OSError, HTTPException) as error:
+        raise ProviderError("provider request failed before a complete response was received") from error
+
+

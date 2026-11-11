@@ -11,9 +11,10 @@ from .llm_extract import (
     DEFAULT_MAX_CHARS,
     DEFAULT_MAX_ITEMS,
     PROMPT_VERSION,
+    Provider,
+    ProviderError,
     VALIDATOR_VERSION,
     VERDICTS,
-    Provider,
     extract_review_fields,
     normalize_whitespace,
 )
@@ -67,7 +68,9 @@ def evaluate_provider(
         }
         reasons = Counter(item["reason"] for item in record["rejected"])
         rejections.update(reasons)
-        verdict_correct = record["verdict"] == expected["verdict"]
+        # A default "unknown" left behind by a failed or invalid response is not an answer.
+        verdict_admitted = not any(item["field"] in ("verdict", "response") for item in record["rejected"])
+        verdict_correct = verdict_admitted and record["verdict"] == expected["verdict"]
         totals.update(
             cases=1,
             verdict_correct=int(verdict_correct),
@@ -158,10 +161,16 @@ class GoldenReplayProvider:
         self._cases = list(cases)
 
     def _case_index(self, user_prompt: str) -> int:
-        for index, case in enumerate(self._cases):
-            if case["text"] in user_prompt:
-                return index
-        raise LookupError("prompt does not contain a golden case text")
+        # The extractor may truncate the text to max_chars, so match the delimited
+        # body as a prefix of exactly one golden text rather than the full text.
+        opening, closing = "<review_text>\n", "\n</review_text>"
+        start = user_prompt.find(opening)
+        end = user_prompt.rfind(closing)
+        body = user_prompt[start + len(opening):end] if start >= 0 and end > start else user_prompt
+        matches = [index for index, case in enumerate(self._cases) if body and case["text"].startswith(body)]
+        if len(matches) != 1:
+            raise ProviderError(f"prompt body matches {len(matches)} golden cases; expected exactly one")
+        return matches[0]
 
     def __call__(self, system: str, user: str, schema: dict) -> dict:
         expected = self._cases[self._case_index(user)]["expected"]
